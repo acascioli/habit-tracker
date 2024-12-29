@@ -4,6 +4,7 @@ import { invoke } from "@tauri-apps/api/core";
 import "./index.css";
 import { Button } from "@/components/ui/button"
 import WeightPage from "./sections/weight";
+import SetitngsPage from "./sections/settings";
 
 function App() {
 
@@ -11,15 +12,17 @@ function App() {
     <main className="p-8">
       <h1 className="text-xl font-bold">Dashboard</h1>
       <hr className="my-4" />
-      <Tabs defaultValue="account" className="">
+      <Tabs defaultValue="settings" className="">
         <TabsList>
-          <TabsTrigger value="account">Account</TabsTrigger>
-          <TabsTrigger value="password">Password</TabsTrigger>
+          <TabsTrigger value="settings">Settings</TabsTrigger>
+          <TabsTrigger value="weight">Weight</TabsTrigger>
         </TabsList>
-        <TabsContent value="account">
+        <TabsContent value="settings">
+          <SetitngsPage />
+        </TabsContent>
+        <TabsContent value="weight">
           <WeightPage />
         </TabsContent>
-        <TabsContent value="password">Change your password here.</TabsContent>
       </Tabs>
     </main>
   );
