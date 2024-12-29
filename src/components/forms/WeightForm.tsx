@@ -1,30 +1,14 @@
-"use client"
-
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
-
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
 import { Calendar as CalendarIcon } from "lucide-react"
-
 import { Calendar } from "@/components/ui/calendar"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { toast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form"
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 
 const FormSchema = z.object({
@@ -40,7 +24,13 @@ const FormSchema = z.object({
   }),
 })
 
-export function WeightForm() {
+// Add the db prop to the component type
+type WeightFormProps = {
+  addWeight: (newWeight: { weight: number; date: Date }) => void; // Function to update parent state
+  db: any; // Your DB connection
+}
+
+export function WeightForm({ addWeight, db }: WeightFormProps) {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -49,7 +39,8 @@ export function WeightForm() {
     },
   })
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
+  // Function to handle form submission
+  async function onSubmit(data: z.infer<typeof FormSchema>) {
     toast({
       title: "You submitted the following values:",
       description: (
@@ -58,6 +49,36 @@ export function WeightForm() {
         </pre>
       ),
     })
+
+    // Insert the data into the database
+    if (db) {
+      try {
+        await db.execute(`
+          INSERT INTO weights (weight, date)
+          VALUES (?, ?)
+        `, [data.weight, data.date]);
+        toast({
+          title: "Data Inserted",
+          description: "Your weight data has been successfully saved to the database.",
+        });
+
+        const newWeight = {
+          weight: data.weight,
+          date: data.date,
+        };
+
+        // Add the new weight to the parent component's state
+        addWeight(newWeight);
+
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "There was an issue saving your data.",
+          variant: "destructive",
+        });
+        console.error("Error inserting data into the database:", error);
+      }
+    }
   }
 
   return (

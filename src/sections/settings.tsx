@@ -5,7 +5,7 @@ import { load, Store } from '@tauri-apps/plugin-store';
 
 import { useEffect, useState } from 'react';
 
-import { create, exists, BaseDirectory, mkdir } from '@tauri-apps/plugin-fs';
+import { create, exists, mkdir } from '@tauri-apps/plugin-fs';
 import * as path from '@tauri-apps/api/path';
 import Database from '@tauri-apps/plugin-sql';
 
@@ -55,7 +55,7 @@ export default function SettingsPage() {
 
   async function handleFileClick() {
     if (settingPath) {
-      const testPath = await path.join(settingPath, 'test')
+      const testPath = await path.join(settingPath, 'db')
       const dbPath = await path.join(testPath, 'my.db');
       const folderExists = await exists(testPath)
       const dbExists = await exists(dbPath)
@@ -71,11 +71,11 @@ export default function SettingsPage() {
           kind: 'warning',
         });
         if (answer && folderExists) {
-          const file = await create(dbPath)
+          await create(dbPath)
         }
         else if (answer && !folderExists) {
           await mkdir(testPath)
-          const file = await create(dbPath)
+          await create(dbPath)
         }
 
         const db = await Database.load(`sqlite:${dbPath}`);
@@ -84,18 +84,18 @@ export default function SettingsPage() {
       CREATE TABLE IF NOT EXISTS weights (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         weight REAL NOT NULL,
-        recorded_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        date DATETIME DEFAULT CURRENT_TIMESTAMP
       );
       CREATE TABLE IF NOT EXISTS kilometers (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         km REAL NOT NULL,
-        recorded_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        date DATETIME DEFAULT CURRENT_TIMESTAMP
       );
       CREATE TABLE IF NOT EXISTS invoices (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         amount REAL NOT NULL,
         description TEXT,
-        recorded_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        date DATETIME DEFAULT CURRENT_TIMESTAMP
       );
     `);
       }

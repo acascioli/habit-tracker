@@ -1,4 +1,3 @@
-
 "use client"
 
 import { ColumnDef } from "@tanstack/react-table"
@@ -16,16 +15,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
-export type Payment = {
-  id: string
-  amount: number
-  status: "pending" | "processing" | "success" | "failed"
-  email: string
-}
+// Define the type for the weight entry.
+export type Weight = {
+  id: string;  // Unique identifier for the weight entry
+  weight: number;  // The weight value, a number representing the weight in kg
+  date: Date;  // The date when the weight was recorded
+};
 
-export const columns: ColumnDef<Payment>[] = [
+export const columns: ColumnDef<Weight>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -49,36 +46,40 @@ export const columns: ColumnDef<Payment>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "amount",
-    header: () => <div className="text-right">Amount</div>,
-    cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("amount"))
-      const formatted = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(amount)
-
-      return <div className="text-right font-medium">{formatted}</div>
-    },
-  },
-  {
-    accessorKey: "email",
+    accessorKey: "date",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Email
+          Date
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       )
+    },
+    cell: ({ row }) => {
+      const date = row.getValue("date")
+      const formattedDate = new Intl.DateTimeFormat("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      }).format(new Date(date))  // Formatting the date into a readable format
+      return <div className="text-right">{formattedDate}</div>
+    },
+  },
+  {
+    accessorKey: "weight",
+    header: () => <div className="text-right">Weight (kg)</div>,
+    cell: ({ row }) => {
+      const weight = row.getValue("weight")
+      return <div className="text-right font-medium">{weight} kg</div>
     },
   },
   {
     id: "actions",
     cell: ({ row }) => {
-      const payment = row.original
+      const weightEntry = row.original
 
       return (
         <DropdownMenu>
@@ -91,13 +92,12 @@ export const columns: ColumnDef<Payment>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.id)}
+              onClick={() => navigator.clipboard.writeText(weightEntry.id)}
             >
-              Copy payment ID
+              Copy weight ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
+            <DropdownMenuItem>View details</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       )

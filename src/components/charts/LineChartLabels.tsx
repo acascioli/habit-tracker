@@ -1,49 +1,46 @@
-
 "use client"
 
 import { TrendingUp } from "lucide-react"
 import { CartesianGrid, LabelList, Line, LineChart, XAxis } from "recharts"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart"
-const chartData = [
-  { month: "January", desktop: 186, mobile: 80 },
-  { month: "February", desktop: 305, mobile: 200 },
-  { month: "March", desktop: 237, mobile: 120 },
-  { month: "April", desktop: 73, mobile: 190 },
-  { month: "May", desktop: 209, mobile: 130 },
-  { month: "June", desktop: 214, mobile: 140 },
-]
+// Define types for the chart data
+type LineChartLabelsProps = {
+  data: { weight: number; date: Date }[]; // We expect the data to be in {weight, date} format
+}
 
 const chartConfig = {
   desktop: {
-    label: "Desktop",
-    color: "hsl(var(--chart-1))",
+    label: "Weight",
+    color: "hsl(var(--chart-1))", // Can customize colors if needed
   },
-  mobile: {
-    label: "Mobile",
-    color: "hsl(var(--chart-2))",
-  },
-} satisfies ChartConfig
+}
 
-export function LineChartLabels() {
+export function LineChartLabels({ data }: LineChartLabelsProps) {
+  // Sort the data by date (oldest to newest)
+  const sortedData = [...data].sort((a, b) => new Date(a.date) - new Date(b.date))
+
+  // Map the weight data to the required format for recharts
+  const chartData = sortedData.map((entry) => ({
+    month: new Intl.DateTimeFormat("en-US", { month: "short" }).format(new Date(entry.date)), // Format the date as short month
+    weight: entry.weight, // Map the weight
+  }))
+
+  // Calculate the trend by comparing the last entry with the second-to-last entry
+  const lastWeight = sortedData[sortedData.length - 1]?.weight
+  const secondLastWeight = sortedData[sortedData.length - 2]?.weight
+  let trend = 0
+
+  if (lastWeight != null && secondLastWeight != null) {
+    trend = ((lastWeight - secondLastWeight) / secondLastWeight) * 100
+  }
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Line Chart - Label</CardTitle>
-        <CardDescription>January - June 2024</CardDescription>
+        <CardTitle>Weight Over Time</CardTitle>
+        <CardDescription>Showing weight changes over time</CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
@@ -69,7 +66,7 @@ export function LineChartLabels() {
               content={<ChartTooltipContent indicator="line" />}
             />
             <Line
-              dataKey="desktop"
+              dataKey="weight"
               type="natural"
               stroke="var(--color-desktop)"
               strokeWidth={2}
@@ -92,10 +89,10 @@ export function LineChartLabels() {
       </CardContent>
       <CardFooter className="flex-col items-start gap-2 text-sm">
         <div className="flex gap-2 font-medium leading-none">
-          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
+          Trending {trend > 0 ? "up" : trend < 0 ? "down" : "flat"} by {Math.abs(trend).toFixed(2)}% this month <TrendingUp className={`h-4 w-4 ${trend >= 0 ? "text-green-500" : "text-red-500"}`} />
         </div>
         <div className="leading-none text-muted-foreground">
-          Showing total visitors for the last 6 months
+          Showing total weight changes over the past months
         </div>
       </CardFooter>
     </Card>
