@@ -27,16 +27,23 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { EditForm } from "@/components/EditForm"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
-  data: TData[]
+  data: TData[],
+  db: any,
+  updateWeight:
+  (updatedWeight: { id: number; weight: number; date: Date }) => void;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
-}: DataTableProps<TData, TValue>) {
+  db,
+  updateWeight // Function to update parent state
+
+}: DataTableProps<TData, TValue,>) {
 
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -168,6 +175,7 @@ export function DataTable<TData, TValue>({
           Next
         </Button>
       </div>
+      <EditForm data={table.getFilteredSelectedRowModel().rows} db={db} updateWeight={updateWeight} />
       <div className="flex-1 text-sm text-muted-foreground">
         {table.getFilteredSelectedRowModel().rows.length} of{" "}
         {table.getFilteredRowModel().rows.length} row(s) selected.

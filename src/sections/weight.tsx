@@ -20,7 +20,7 @@ export default function WeightPage() {
   const [store, setStore] = useState<Store | null>(null);
   const [settingPath, setSettingPath] = useState<string | null>(null);
 
-  // TODO remove any and add proper type
+  // TODO: remove any and add proper type
   const [db, setDb] = useState<any | null>(null); // DB connection state
 
   // Prompt the user to select a folder and save it
@@ -96,7 +96,19 @@ export default function WeightPage() {
         )}
       </Card>
       <Card className="p-4">
-        <DataTable columns={columns} data={data} />
+        <DataTable columns={columns} data={data} db={db}
+          updateWeight={(updatedWeight: { id: number; weight: number; date: Date }) => {
+            // Update the existing weight in the data
+            setData((prevData) => {
+              const updatedData = prevData.map((item) =>
+                item.id === updatedWeight.id ? updatedWeight : item
+              );
+              // Sort the updated data by date (oldest to newest)
+              return updatedData.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+            });
+          }}
+
+        />
       </Card>
       <div className="w-full min-w-48">
         {/* Pass the weight data as props to the LineChartLabels component */}
