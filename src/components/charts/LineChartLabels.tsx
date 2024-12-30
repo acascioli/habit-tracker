@@ -1,6 +1,6 @@
 "use client"
 
-import { TrendingUp } from "lucide-react"
+import { TrendingDown, TrendingUp } from "lucide-react"
 import { CartesianGrid, LabelList, Line, LineChart, XAxis } from "recharts"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
@@ -19,7 +19,7 @@ const chartConfig = {
 
 export function LineChartLabels({ data }: LineChartLabelsProps) {
   // Sort the data by date (oldest to newest)
-  const sortedData = [...data].sort((a, b) => new Date(a.date) - new Date(b.date))
+  const sortedData = [...data].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
   // Map the weight data to the required format for recharts
   const chartData = sortedData.map((entry) => ({
@@ -89,7 +89,7 @@ export function LineChartLabels({ data }: LineChartLabelsProps) {
       </CardContent>
       <CardFooter className="flex-col items-start gap-2 text-sm">
         <div className="flex gap-2 font-medium leading-none">
-          Trending {trend > 0 ? "up" : trend < 0 ? "down" : "flat"} by {Math.abs(trend).toFixed(2)}% this month <TrendingUp className={`h-4 w-4 ${trend >= 0 ? "text-green-500" : "text-red-500"}`} />
+          Trending {trend > 0 ? "up" : trend < 0 ? "down" : "flat"} by {Math.abs(trend).toFixed(2)}% this month {trend > 0 ? <TrendingUp className="h-4 w-4 text-green-500" /> : <TrendingDown className="h-4 w-4 text-red-500" />}
         </div>
         <div className="leading-none text-muted-foreground">
           Showing total weight changes over the past months

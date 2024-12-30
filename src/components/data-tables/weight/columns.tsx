@@ -1,24 +1,14 @@
 "use client"
 
 import { ColumnDef } from "@tanstack/react-table"
-import { MoreHorizontal } from "lucide-react"
 import { ArrowUpDown } from "lucide-react"
 import { Checkbox } from "@/components/ui/checkbox"
 
 import { Button } from "@/components/ui/button"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { EditForm } from "@/components/EditForm"
 
 // Define the type for the weight entry.
 export type Weight = {
-  id: string;  // Unique identifier for the weight entry
+  id: number;  // Unique identifier for the weight entry
   weight: number;  // The weight value, a number representing the weight in kg
   date: Date;  // The date when the weight was recorded
 };
@@ -65,7 +55,7 @@ export const columns: ColumnDef<Weight>[] = [
         year: "numeric",
         month: "short",
         day: "numeric",
-      }).format(new Date(date))  // Formatting the date into a readable format
+      }).format(new Date(date as string | number | Date))  // Formatting the date into a readable format
       return <div className="text-right">{formattedDate}</div>
     },
   },
@@ -74,7 +64,7 @@ export const columns: ColumnDef<Weight>[] = [
     header: () => <div className="text-right">Weight (kg)</div>,
     cell: ({ row }) => {
       const weight = row.getValue("weight")
-      return <div className="text-right font-medium">{weight} kg</div>
+      return <div className="text-right font-medium">{weight as string | number} kg</div>
     },
   },
   // {

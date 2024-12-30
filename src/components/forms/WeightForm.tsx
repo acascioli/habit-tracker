@@ -26,7 +26,7 @@ const FormSchema = z.object({
 
 // Add the db prop to the component type
 type WeightFormProps = {
-  addWeight: (newWeight: { weight: number; date: Date }) => void; // Function to update parent state
+  addWeight: (newWeight: { id: number, weight: number; date: Date }) => void; // Function to update parent state
   db: any; // Your DB connection
 }
 
@@ -53,16 +53,24 @@ export function WeightForm({ addWeight, db }: WeightFormProps) {
     // Insert the data into the database
     if (db) {
       try {
-        await db.execute(`
-          INSERT INTO weights (weight, date)
-          VALUES (?, ?)
-        `, [data.weight, data.date]);
+        const result = await db.execute(
+          `
+    INSERT INTO weights (weight, date)
+    VALUES (?, ?)
+    RETURNING id
+    `,
+          [data.weight, data.date]
+        );
+
+        const insertedId = result[0]?.id; // Adjust based on the database client structure
+
         toast({
           title: "Data Inserted",
           description: "Your weight data has been successfully saved to the database.",
         });
 
         const newWeight = {
+          id: insertedId,
           weight: data.weight,
           date: data.date,
         };

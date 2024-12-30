@@ -64,7 +64,7 @@ export default function WeightPage() {
           SELECT * FROM weights
         `);
         // Sort the data by date (oldest to newest)
-        const sortedData = [...fetchedData].sort((a, b) => new Date(b.date) - new Date(a.date))
+        const sortedData = [...fetchedData].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
         setData(sortedData);
       } catch (error) {
         console.error("Error initializing database:", error);
@@ -84,7 +84,7 @@ export default function WeightPage() {
         {db && (
           <WeightForm
             db={db}
-            addWeight={(newWeight: { weight: number; date: Date }) => {
+            addWeight={(newWeight: { id: number, weight: number; date: Date }) => {
               // Add the new weight to the existing data
               setData((prevData) => {
                 const updatedData = [...prevData, newWeight];

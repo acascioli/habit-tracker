@@ -3,13 +3,6 @@
 
 import * as React from "react"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 
 import {
   ColumnDef, SortingState, ColumnFiltersState, VisibilityState,
@@ -43,7 +36,7 @@ export function DataTable<TData, TValue>({
   db,
   updateWeight // Function to update parent state
 
-}: DataTableProps<TData, TValue,>) {
+}: DataTableProps<TData, TValue>) {
 
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
