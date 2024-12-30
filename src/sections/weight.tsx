@@ -96,7 +96,7 @@ export default function WeightPage() {
         )}
       </Card>
       <Card className="p-4">
-        <DataTable columns={columns} data={data} db={db}
+        <DataTable columns={columns} data={data} db={db} setData={setData}
           updateWeight={(updatedWeight: { id: number; weight: number; date: Date }) => {
             // Update the existing weight in the data
             setData((prevData) => {

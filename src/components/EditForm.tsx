@@ -136,7 +136,7 @@ export function EditForm({ data, db, updateWeight }: EditFormProps) {
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>
-        <Button variant="outline" disabled={isDisabled}>Edit Profile</Button>
+        <Button variant="outline" disabled={isDisabled} size="sm">Edit Profile</Button>
       </DrawerTrigger>
       <DrawerContent>
         <DrawerHeader className="">

@@ -4,6 +4,7 @@
 import * as React from "react"
 import { Button } from "@/components/ui/button"
 
+import { toast } from "@/hooks/use-toast"
 import {
   ColumnDef, SortingState, ColumnFiltersState, VisibilityState,
   flexRender,
@@ -21,21 +22,26 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { EditForm } from "@/components/EditForm"
+import { Weight } from "./columns"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[],
   db: any,
+  setData: React.Dispatch<React.SetStateAction<Weight[]>>,
   updateWeight:
   (updatedWeight: { id: number; weight: number; date: Date }) => void;
 }
 
-export function DataTable<TData, TValue>({
+interface Identifiable {
+  id: number;
+}
+
+export function DataTable<TData extends Identifiable, TValue>({
   columns,
   data,
-  db,
-  updateWeight // Function to update parent state
-
+  db, setData,
+  updateWeight,
 }: DataTableProps<TData, TValue>) {
 
   const [sorting, setSorting] = React.useState<SortingState>([])
@@ -66,6 +72,46 @@ export function DataTable<TData, TValue>({
     },
   })
 
+  function removeWeights(ids: number[]) {
+    setData((prevData) => prevData.filter((item) => !ids.includes(item.id)));
+  }
+
+  async function onDelete(rowsToDelete: Array<TData>) {
+    if (db) {
+      try {
+        console.log(rowsToDelete)
+        // Start a transaction if supported
+        await Promise.all(
+          rowsToDelete.map(async (row) => {
+            await db.execute(
+              `
+            DELETE FROM weights
+            WHERE id = ?
+            `,
+              [row.id]
+            );
+          })
+        );
+
+        toast({
+          title: "Data Deleted",
+          description: `${rowsToDelete.length} item(s) have been successfully removed from the database.`,
+        });
+
+        // Update the parent's state to remove the deleted items
+        const idsToDelete = rowsToDelete.map((row) => row.id);
+        removeWeights(idsToDelete); // Ensure `removeWeights` is implemented in the parent component
+
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "There was an issue deleting your data.",
+          variant: "destructive",
+        });
+        console.error("Error deleting data from the database:", error);
+      }
+    }
+  }
   return (
     <div>
       {/* <div className="flex items-center py-4"> */}
@@ -168,7 +214,17 @@ export function DataTable<TData, TValue>({
           Next
         </Button>
       </div>
-      <EditForm data={table.getFilteredSelectedRowModel().rows} db={db} updateWeight={updateWeight} />
+      <div className="flex items-center justify-end space-x-2 pb-2">
+        <EditForm data={table.getFilteredSelectedRowModel().rows} db={db} updateWeight={updateWeight} />
+        <Button
+          variant="destructive"
+          size="sm"
+          onClick={() => onDelete(table.getFilteredSelectedRowModel().rows.map((row) => row.original))}
+          disabled={table.getFilteredSelectedRowModel().rows.length == 0}
+        >
+          Delete
+        </Button>
+      </div>
       <div className="flex-1 text-sm text-muted-foreground">
         {table.getFilteredSelectedRowModel().rows.length} of{" "}
         {table.getFilteredRowModel().rows.length} row(s) selected.

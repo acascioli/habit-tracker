@@ -103,10 +103,11 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="space-y-4 flex flex-col items-center justify-center">
+    <div className="space-y-4 flex flex-col items-start justify-center">
       <div>
         <p className='font-semibold'>Current Path:</p>
-        {settingPath ? settingPath : 'Loading...'}</div>
+        {settingPath ? settingPath : 'Loading...'}
+      </div>
       <div className='space-x-4'>
         <Button onClick={
           handleFileClick
@@ -117,6 +118,15 @@ export default function SettingsPage() {
         <Button onClick={handleChangeSettingPath} >
           Change Setting Path
         </Button>
+      </div>
+      <div>
+        <p className='font-semibold'>Objectives:</p>
+        <p className='italic font-light'>List of objective to be monitored:</p>
+        <ul>
+          <li>
+            Weight
+          </li>
+        </ul>
       </div>
     </div>
   );
