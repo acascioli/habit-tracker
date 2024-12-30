@@ -9,6 +9,7 @@ import { open } from '@tauri-apps/plugin-dialog';
 import { load, Store } from '@tauri-apps/plugin-store';
 import Database from '@tauri-apps/plugin-sql';
 import * as path from '@tauri-apps/api/path';
+import useWeightStore from "@/store/weight";
 
 // Define the store keys and types
 interface StoreSchema {
@@ -16,7 +17,9 @@ interface StoreSchema {
 }
 
 export default function WeightPage() {
-  const [data, setData] = useState<Weight[]>([]);
+  const weights = useWeightStore((state) => state.weights)
+  const setWeights = useWeightStore((state) => state.setWeights)
+  // const [data, setData] = useState<Weight[]>([]);
   const [store, setStore] = useState<Store | null>(null);
   const [settingPath, setSettingPath] = useState<string | null>(null);
 
@@ -65,7 +68,7 @@ export default function WeightPage() {
         `);
         // Sort the data by date (oldest to newest)
         const sortedData = [...fetchedData].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-        setData(sortedData);
+        setWeights(sortedData);
       } catch (error) {
         console.error("Error initializing database:", error);
         // Optionally handle the error, maybe show a user-friendly message
@@ -84,35 +87,17 @@ export default function WeightPage() {
         {db && (
           <WeightForm
             db={db}
-            addWeight={(newWeight: { id: number, weight: number; date: Date }) => {
-              // Add the new weight to the existing data
-              setData((prevData) => {
-                const updatedData = [...prevData, newWeight];
-                // Sort the updated data by date (oldest to newest)
-                return updatedData.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-              });
-            }}
           />
         )}
       </Card>
       <Card className="p-4">
-        <DataTable columns={columns} data={data} db={db} setData={setData}
-          updateWeight={(updatedWeight: { id: number; weight: number; date: Date }) => {
-            // Update the existing weight in the data
-            setData((prevData) => {
-              const updatedData = prevData.map((item) =>
-                item.id === updatedWeight.id ? updatedWeight : item
-              );
-              // Sort the updated data by date (oldest to newest)
-              return updatedData.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-            });
-          }}
+        <DataTable columns={columns} data={weights} db={db}
 
         />
       </Card>
       <div className="w-full min-w-48">
         {/* Pass the weight data as props to the LineChartLabels component */}
-        <LineChartLabels data={data} />
+        <LineChartLabels data={weights} />
       </div>
     </div>
   );

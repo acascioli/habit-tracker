@@ -35,6 +35,7 @@
       ]
     },
     "sql:default",
-    "sql:allow-execute"
+    "sql:allow-execute",
+    "core:window:default"
   ]
 }

@@ -22,15 +22,12 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { EditForm } from "@/components/EditForm"
-import { Weight } from "./columns"
+import useWeightStore from "@/store/weight"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[],
   db: any,
-  setData: React.Dispatch<React.SetStateAction<Weight[]>>,
-  updateWeight:
-  (updatedWeight: { id: number; weight: number; date: Date }) => void;
 }
 
 interface Identifiable {
@@ -40,8 +37,7 @@ interface Identifiable {
 export function DataTable<TData extends Identifiable, TValue>({
   columns,
   data,
-  db, setData,
-  updateWeight,
+  db,
 }: DataTableProps<TData, TValue>) {
 
   const [sorting, setSorting] = React.useState<SortingState>([])
@@ -72,9 +68,8 @@ export function DataTable<TData extends Identifiable, TValue>({
     },
   })
 
-  function removeWeights(ids: number[]) {
-    setData((prevData) => prevData.filter((item) => !ids.includes(item.id)));
-  }
+
+  const removeWeights = useWeightStore((state) => state.removeWeights)
 
   async function onDelete(rowsToDelete: Array<TData>) {
     if (db) {
@@ -215,7 +210,7 @@ export function DataTable<TData extends Identifiable, TValue>({
         </Button>
       </div>
       <div className="flex items-center justify-end space-x-2 pb-2">
-        <EditForm data={table.getFilteredSelectedRowModel().rows} db={db} updateWeight={updateWeight} />
+        <EditForm data={table.getFilteredSelectedRowModel().rows} db={db} />
         <Button
           variant="destructive"
           size="sm"

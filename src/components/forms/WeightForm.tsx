@@ -10,6 +10,7 @@ import { toast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import useWeightStore from "@/store/weight"
 
 const FormSchema = z.object({
   weight: z
@@ -26,11 +27,12 @@ const FormSchema = z.object({
 
 // Add the db prop to the component type
 type WeightFormProps = {
-  addWeight: (newWeight: { id: number, weight: number; date: Date }) => void; // Function to update parent state
   db: any; // Your DB connection
 }
 
-export function WeightForm({ addWeight, db }: WeightFormProps) {
+export function WeightForm({ db }: WeightFormProps) {
+  const addWeight = useWeightStore((state) => state.addWeight)
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {

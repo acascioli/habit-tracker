@@ -24,18 +24,19 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { format } from "date-fns"
 import { Calendar as CalendarIcon } from "lucide-react"
 import { Calendar } from "@/components/ui/calendar"
+import useWeightStore from "@/store/weight"
 
 // TODO: fix type
 interface EditFormProps {
   // data: Row<TData>[] | null;  // Accepting selected row data
   data: any | null;
   db: any// Accepting selected row data,
-  updateWeight:
-  (updatedWeight: { id: number; weight: number; date: Date }) => void;
 }
 
-export function EditForm({ data, db, updateWeight }: EditFormProps) {
+export function EditForm({ data, db }: EditFormProps) {
   const [open, setOpen] = React.useState(false)
+
+  const updateWeight = useWeightStore((state) => state.updateWeight)
 
   const FormSchema = z.object({
     weight: z
