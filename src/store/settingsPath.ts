@@ -2,7 +2,7 @@ import { create } from "zustand";
 
 interface SettingsStore {
   settingsPath: string | null; // For storing the weights data
-  setSettingsPath: (settingsPath: string) => void;
+  setSettingsPath: (settingsPath: string | null) => void;
 }
 
 const useSettingsStore = create<SettingsStore>((set) => ({

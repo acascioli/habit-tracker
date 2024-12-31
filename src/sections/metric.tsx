@@ -1,3 +1,4 @@
+
 "use client";
 
 import { LineChartLabels } from "@/components/charts/LineChartLabels";
@@ -8,7 +9,7 @@ import { Card } from "@/components/ui/card";
 
 import useWeightStore from "@/store/weight";
 
-export default function WeightPage() {
+export default function MetricPage() {
   const weights = useWeightStore((state) => state.weights);
 
 
