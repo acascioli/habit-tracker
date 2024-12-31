@@ -46,7 +46,7 @@ export function useInitializeDatabase() {
           SELECT * FROM metrics
         `);
         const sortedData = [...fetchedData].sort((a, b) =>
-          b.category.localeCompare(a.category)
+          a.category.localeCompare(b.category)
         );
         setMetrics(sortedData);
       } catch (error) {

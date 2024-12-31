@@ -1,6 +1,5 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import "./index.css";
-import WeightPage from "./sections/weight";
 import SetitngsPage from "./sections/settings";
 import { DatePickerWithRange } from "./components/DatePicker";
 import OverviewPage from "./sections/overview";
@@ -8,6 +7,7 @@ import useMetricsStore from "./store/metrics";
 import { useInitializeStore } from "@/hooks/useInitializeStore";
 import { useInitializeDatabase } from "@/hooks/useInitializeDatabase";
 import { useDatabaseSetup } from "@/hooks/useDatabaseSetup";
+import MetricPage from "./sections/metric";
 
 function App() {
 
@@ -40,9 +40,14 @@ function App() {
         <TabsContent value="overview">
           <OverviewPage />
         </TabsContent>
-        <TabsContent value="Weight">
-          <WeightPage />
-        </TabsContent>
+        {
+          metrics.map((metric) => {
+            return <TabsContent value={metric.category}>
+              <MetricPage category={metric.category} kpi={metric.kpi} />
+            </TabsContent>
+
+          })
+        }
         <TabsContent value="settings">
           <SetitngsPage />
         </TabsContent>

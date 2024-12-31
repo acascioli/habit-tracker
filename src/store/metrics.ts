@@ -28,7 +28,7 @@ const useMetricsStore = create<MetricsStore>((set) => ({
     set((state) => {
       const updatedMetrics = [...state.metrics, newMetric];
       updatedMetrics.sort((a, b) =>
-        b.category.localeCompare(a.category)
+        a.category.localeCompare(b.category)
       );
       return { metrics: updatedMetrics };
     }),
@@ -40,7 +40,7 @@ const useMetricsStore = create<MetricsStore>((set) => ({
         item.id === updatedMetric.id ? updatedMetric : item
       );
       updatedMetrics.sort((a, b) =>
-        b.category.localeCompare(a.category)
+        a.category.localeCompare(b.category)
       );
       return { metrics: updatedMetrics };
     }),
