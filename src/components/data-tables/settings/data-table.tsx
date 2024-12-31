@@ -21,9 +21,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import useWeightStore from "@/store/weight"
-import useDBStore from "@/store/db"
 import { EditForm } from "./EditForm"
+import useDBStore from "@/store/db"
+import useMetricsStore from "@/store/metrics"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -68,19 +68,19 @@ export function DataTable<TData extends Identifiable, TValue>({
   })
 
 
-  const removeWeights = useWeightStore((state) => state.removeWeights)
-  const db = useDBStore((state) => state.db)
+  const removeMetrics = useMetricsStore((state) => state.removeMetrics)
+  const settingsDB = useDBStore((state) => state.settingsDB)
 
   async function onDelete(rowsToDelete: Array<TData>) {
-    if (db) {
+    if (settingsDB) {
       try {
         console.log(rowsToDelete)
         // Start a transaction if supported
         await Promise.all(
           rowsToDelete.map(async (row) => {
-            await db.execute(
+            await settingsDB.execute(
               `
-            DELETE FROM weights
+            DELETE FROM metrics
             WHERE id = ?
             `,
               [row.id]
@@ -95,7 +95,7 @@ export function DataTable<TData extends Identifiable, TValue>({
 
         // Update the parent's state to remove the deleted items
         const idsToDelete = rowsToDelete.map((row) => row.id);
-        removeWeights(idsToDelete); // Ensure `removeWeights` is implemented in the parent component
+        removeMetrics(idsToDelete); // Ensure `removeWeights` is implemented in the parent component
 
       } catch (error) {
         toast({
@@ -210,7 +210,7 @@ export function DataTable<TData extends Identifiable, TValue>({
         </Button>
       </div>
       <div className="flex items-center justify-end space-x-2 pb-2">
-        <EditForm data={table.getFilteredSelectedRowModel().rows} db={db} />
+        <EditForm data={table.getFilteredSelectedRowModel().rows} db={settingsDB} />
         <Button
           variant="destructive"
           size="sm"

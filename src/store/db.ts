@@ -5,13 +5,15 @@ import { create } from "zustand";
 interface DBStore {
   db: any; // For storing the weights data
   setDB: (db: any) => void;
+  settingsDB: any; // For storing the weights data
+  setSettingsDB: (db: any) => void;
 }
 
 const useDBStore = create<DBStore>((set) => ({
   db: null,
-
-  // Set the entire weights array
   setDB: (db) => set({ db }),
+  settingsDB: null,
+  setSettingsDB: (settingsDB) => set({ settingsDB }),
 }))
 
 
