@@ -10,6 +10,7 @@ import { load, Store } from '@tauri-apps/plugin-store';
 import Database from '@tauri-apps/plugin-sql';
 import * as path from '@tauri-apps/api/path';
 import useWeightStore from "@/store/weight";
+import useDBStore from "@/store/db";
 
 // Define the store keys and types
 interface StoreSchema {
@@ -19,12 +20,11 @@ interface StoreSchema {
 export default function WeightPage() {
   const weights = useWeightStore((state) => state.weights)
   const setWeights = useWeightStore((state) => state.setWeights)
-  // const [data, setData] = useState<Weight[]>([]);
+  const db = useDBStore((state) => state.db)
+  const setDB = useDBStore((state) => state.setDB)
   const [store, setStore] = useState<Store | null>(null);
   const [settingPath, setSettingPath] = useState<string | null>(null);
 
-  // TODO: remove any and add proper type
-  const [db, setDb] = useState<any | null>(null); // DB connection state
 
   // Prompt the user to select a folder and save it
   async function promptForSettingPath(loadedStore = store) {
@@ -60,7 +60,7 @@ export default function WeightPage() {
 
       try {
         const dbConnection = await Database.load(`sqlite:${dbPath}`);
-        setDb(dbConnection);
+        setDB(dbConnection);
 
         // Fetch data from the database once the connection is established
         const fetchedData = await dbConnection.select<Weight[]>(`
@@ -86,13 +86,11 @@ export default function WeightPage() {
         <p className="font-semibold text-lg">Weight Monitor</p>
         {db && (
           <WeightForm
-            db={db}
           />
         )}
       </Card>
       <Card className="p-4">
-        <DataTable columns={columns} data={weights} db={db}
-
+        <DataTable columns={columns} data={weights}
         />
       </Card>
       <div className="w-full min-w-48">

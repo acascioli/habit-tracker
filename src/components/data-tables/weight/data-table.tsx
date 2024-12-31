@@ -21,13 +21,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { EditForm } from "@/components/EditForm"
+import { EditForm } from "@/components/forms/EditForm"
 import useWeightStore from "@/store/weight"
+import useDBStore from "@/store/db"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[],
-  db: any,
 }
 
 interface Identifiable {
@@ -37,7 +37,6 @@ interface Identifiable {
 export function DataTable<TData extends Identifiable, TValue>({
   columns,
   data,
-  db,
 }: DataTableProps<TData, TValue>) {
 
   const [sorting, setSorting] = React.useState<SortingState>([])
@@ -70,6 +69,7 @@ export function DataTable<TData extends Identifiable, TValue>({
 
 
   const removeWeights = useWeightStore((state) => state.removeWeights)
+  const db = useDBStore((state) => state.db)
 
   async function onDelete(rowsToDelete: Array<TData>) {
     if (db) {

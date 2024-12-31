@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import useWeightStore from "@/store/weight"
+import useDBStore from "@/store/db"
 
 const FormSchema = z.object({
   weight: z
@@ -27,11 +28,11 @@ const FormSchema = z.object({
 
 // Add the db prop to the component type
 type WeightFormProps = {
-  db: any; // Your DB connection
 }
 
-export function WeightForm({ db }: WeightFormProps) {
+export function WeightForm({ }: WeightFormProps) {
   const addWeight = useWeightStore((state) => state.addWeight)
+  const db = useDBStore((state) => state.db)
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
